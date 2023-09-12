@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../service/generate_random_number.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,8 +19,8 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Random Number Generator"),
       ),
       body: Center(
-        child: Text(generatedNumber.toString()),
-      ),
+          child: Text(generatedNumber.toString(),
+              style: GoogleFonts.acme(fontSize: 50))),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
