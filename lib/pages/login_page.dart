@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text("Criar Conta",
                       style: TextStyle(
                           color: Color.fromARGB(255, 73, 98, 255),
-                          fontWeight: FontWeight.w600))),
+                          fontWeight: FontWeight.w500))),
               const SizedBox(
                 height: 40,
               ),
