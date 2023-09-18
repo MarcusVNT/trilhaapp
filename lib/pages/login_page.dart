@@ -130,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: Alignment.center,
                   margin: const EdgeInsets.symmetric(horizontal: 30),
                   height: 30,
-                  child: const Text("riar ContaC",
+                  child: const Text("Criar Conta",
                       style: TextStyle(
                           color: Color.fromARGB(255, 73, 98, 255),
                           fontWeight: FontWeight.w600))),
