@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trilhaapp/pages/main_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -8,8 +9,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String nickname = "";
-  String password = "";
+  var nicknameController = TextEditingController(text: "");
+  var passwordController = TextEditingController(text: "");
   bool isObscureText = true;
 
   @override
@@ -70,8 +71,9 @@ class _LoginPageState extends State<LoginPage> {
                     color: const Color.fromARGB(255, 184, 189, 228),
                     height: 36,
                     child: TextField(
+                      controller: nicknameController,
                       onChanged: (value) {
-                        nickname = value;
+                        debugPrint(value);
                       },
                       decoration: const InputDecoration(
                         contentPadding: EdgeInsets.only(top: 3),
@@ -94,9 +96,10 @@ class _LoginPageState extends State<LoginPage> {
                   color: const Color.fromARGB(255, 184, 189, 228),
                   height: 36,
                   child: TextField(
+                    controller: passwordController,
                     obscureText: isObscureText,
                     onChanged: (value) {
-                      password = value;
+                      debugPrint(value);
                     },
                     decoration: InputDecoration(
                         contentPadding: const EdgeInsets.only(top: 3),
@@ -132,8 +135,20 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       child: TextButton(
                           onPressed: () {
-                            print(nickname);
-                            print(password);
+                            if (nicknameController.text.trim() == "MarcusVNT" &&
+                                passwordController.text.trim() == "123456") {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainPage()));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("Login ou senha incorretos!")));
+                            }
+                            debugPrint(nicknameController.text);
+                            debugPrint(passwordController.text);
                           },
                           style: ButtonStyle(
                             shape: MaterialStateProperty.all<OutlinedBorder>(
