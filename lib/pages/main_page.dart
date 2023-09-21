@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trilhaapp/pages/registration_data.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -25,8 +26,13 @@ class _MainPageState extends State<MainPage> {
                     width: double.infinity,
                     child: const Text("Meus Dados")),
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Dados do usuário clicado!")));
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegistrationData(
+                                texto: "Meus Dados",
+                              )));
                 },
               ),
               const Divider(),
