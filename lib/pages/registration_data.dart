@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trilhaapp/repositories/language_repositories.dart';
 import 'package:trilhaapp/repositories/level_repositories.dart';
-import 'package:trilhaapp/shared_widgets/text_label.dart';
+import 'package:trilhaapp/shared/widgets/text_label.dart';
 
 class RegistrationData extends StatefulWidget {
   const RegistrationData({Key? key}) : super(key: key);
@@ -21,6 +21,8 @@ class _RegistrationDataState extends State<RegistrationData> {
   var languages = [];
   var selectedLanguages = [];
   double chosenSalary = 1320.0;
+  int timeExperience = 0;
+  bool saving = false;
 
   @override
   void initState() {
@@ -28,6 +30,17 @@ class _RegistrationDataState extends State<RegistrationData> {
     levels = levelRepository.retornaLevel();
     languages = languagesRepository.retornaLanguages();
     super.initState();
+  }
+
+  List<DropdownMenuItem<int>> returnsItems(int max) {
+    var items = <DropdownMenuItem<int>>[];
+    for (var i = 0; i <= max; i++) {
+      items.add(DropdownMenuItem(
+        value: i,
+        child: Text(i.toString()),
+      ));
+    }
+    return items;
   }
 
   @override
@@ -38,98 +51,171 @@ class _RegistrationDataState extends State<RegistrationData> {
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          child: ListView(
-            children: [
-              const TextLabel(texto: "Nome"),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  hintText: "Digite seu nome",
-                ),
-              ),
-              const SizedBox(height: 10),
-              const TextLabel(texto: "Data de Nascimento"),
-              TextField(
-                controller: birthDateController,
-                readOnly: true,
-                onTap: () async {
-                  var data = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime(2024, 1, 1),
-                    firstDate: DateTime(1950),
-                    lastDate: DateTime(2057),
-                  );
-                  if (data != null) {
-                    birthDateController.text =
-                        "${data.day}/${data.month}/${data.year}";
-                    birthDate = data;
-                  }
-                },
-              ),
-              const SizedBox(height: 10),
-              const TextLabel(texto: "Nível de Experiência"),
-              Column(
-                  children: levels
-                      .map((level) => RadioListTile(
-                          title: Text(level.toString()),
-                          selected: selectedLevel == level,
-                          value: level,
-                          groupValue: selectedLevel,
-                          onChanged: (value) {
+          child: saving
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                  children: [
+                    const TextLabel(texto: "Nome"),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        hintText: "Digite seu nome",
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const TextLabel(texto: "Data de Nascimento"),
+                    TextField(
+                      controller: birthDateController,
+                      readOnly: true,
+                      onTap: () async {
+                        var data = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime(2024, 1, 1),
+                          firstDate: DateTime(1950),
+                          lastDate: DateTime(2057),
+                        );
+                        if (data != null) {
+                          birthDateController.text =
+                              "${data.day}/${data.month}/${data.year}";
+                          birthDate = data;
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const TextLabel(texto: "Nível de Experiência"),
+                    Column(
+                        children: levels
+                            .map((level) => RadioListTile(
+                                title: Text(level.toString()),
+                                selected: selectedLevel == level,
+                                value: level,
+                                groupValue: selectedLevel,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedLevel = value.toString();
+                                  });
+                                  selectedLevel = value.toString();
+                                }))
+                            .toList()),
+                    const SizedBox(height: 10),
+                    const TextLabel(
+                      texto: "Linguaguens Preferidas",
+                    ),
+                    Column(
+                        children: languages
+                            .map(
+                              (languages) => CheckboxListTile(
+                                title: Text(languages.toString()),
+                                value: selectedLanguages.contains(languages),
+                                onChanged: (bool? value) {
+                                  if (value!) {
+                                    setState(() {
+                                      selectedLanguages.add(languages);
+                                    });
+                                  } else {
+                                    setState(() {
+                                      selectedLanguages.remove(languages);
+                                    });
+                                  }
+                                },
+                              ),
+                            )
+                            .toList()),
+                    const SizedBox(height: 10),
+                    const TextLabel(texto: "Tempo de Experiência (Anos)"),
+                    DropdownButton(
+                        value: timeExperience,
+                        isExpanded: true,
+                        items: returnsItems(40),
+                        onChanged: (value) {
+                          setState(() {
+                            timeExperience = int.parse(value.toString());
+                          });
+                        }),
+                    const SizedBox(height: 10),
+                    TextLabel(
+                        texto:
+                            "Pretensão Salarial. R\$ ${chosenSalary.round().toString()}"),
+                    Slider(
+                        min: 1320,
+                        max: 50000,
+                        value: chosenSalary,
+                        onChanged: (double value) {
+                          setState(() {
+                            chosenSalary = value;
+                          });
+                        }),
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            saving = true;
+                          });
+
+                          if (nameController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Nome deve ser preenchido"),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          if (birthDate == null) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                  "Data de nascimento deve ser preenchido"),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          if (selectedLevel == "") {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Nível deve ser selecionado"),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          if (selectedLanguages.isEmpty) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                  "Pelo menos uma linguagem deve ser selecionada."),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          if (timeExperience == 0) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                  "Tempo de experiência deve ser preenchido"),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+
+                          print(nameController.text);
+                          print(birthDate.toString());
+                          print(selectedLevel);
+                          print(selectedLanguages);
+                          print(timeExperience);
+                          print(chosenSalary);
+
+                          Future.delayed(const Duration(seconds: 3), () {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Dados salvos com sucesso"),
+                              backgroundColor: Colors.green,
+                            ));
                             setState(() {
-                              selectedLevel = value.toString();
+                              saving = false;
                             });
-                            selectedLevel = value.toString();
-                          }))
-                      .toList()),
-              const SizedBox(height: 10),
-              const TextLabel(
-                texto: "Linguaguens Preferidas",
-              ),
-              Column(
-                  children: languages
-                      .map(
-                        (languages) => CheckboxListTile(
-                          title: Text(languages.toString()),
-                          value: selectedLanguages.contains(languages),
-                          onChanged: (bool? value) {
-                            if (value!) {
-                              setState(() {
-                                selectedLanguages.add(languages);
-                              });
-                            } else {
-                              setState(() {
-                                selectedLanguages.remove(languages);
-                              });
-                            }
-                          },
-                        ),
-                      )
-                      .toList()),
-              const SizedBox(height: 10),
-              TextLabel(
-                  texto:
-                      "Pretensão Salarial. R\$ ${chosenSalary.round().toString()}"),
-              Slider(
-                  min: 1320,
-                  max: 50000,
-                  value: chosenSalary,
-                  onChanged: (double value) {
-                    setState(() {
-                      chosenSalary = value;
-                    });
-                  }),
-              TextButton(
-                  onPressed: () {
-                    print(nameController.text);
-                    print(birthDate.toString());
-                    print(selectedLevel);
-                    print(selectedLanguages);
-                    print(chosenSalary);
-                  },
-                  child: const Text("Salvar")),
-            ],
-          ),
+                          });
+                        },
+                        child: const Text("Salvar")),
+                  ],
+                ),
         ));
   }
 }

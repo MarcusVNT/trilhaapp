@@ -3,6 +3,7 @@ import 'package:trilhaapp/pages/page_1.dart';
 import 'package:trilhaapp/pages/page_2.dart';
 import 'package:trilhaapp/pages/page_3.dart';
 import 'package:trilhaapp/pages/registration_data.dart';
+import 'package:trilhaapp/shared/widgets/custon_drawer.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -19,77 +20,7 @@ class _MainPageState extends State<MainPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: const Text("Vida me surpreenda!")),
-        drawer: Drawer(
-            child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    width: double.infinity,
-                    child: const Text("Meus Dados")),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const RegistrationData()));
-                },
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-              InkWell(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    width: double.infinity,
-                    child: const Text("Privacidade e Segurança")),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Privacidade e Segurança clicado!")));
-                },
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-              InkWell(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    width: double.infinity,
-                    child: const Text("Sobre o App")),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Sobre o App clicado!")));
-                },
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-              InkWell(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    width: double.infinity,
-                    child: const Text("Configurações")),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Configurações clicado!")));
-                },
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-              InkWell(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    width: double.infinity,
-                    child: const Text("Sair")),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Sair clicado!")));
-                },
-              ),
-              const Divider(),
-            ],
-          ),
-        )),
+        drawer: const CustonDrawer(),
         body: Column(
           children: [
             Expanded(

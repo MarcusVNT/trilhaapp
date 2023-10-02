@@ -135,8 +135,8 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       child: TextButton(
                           onPressed: () {
-                            if (nicknameController.text.trim() == "MarcusVNT" &&
-                                passwordController.text.trim() == "123456") {
+                            if (nicknameController.text.trim() == "" &&
+                                passwordController.text.trim() == "") {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
