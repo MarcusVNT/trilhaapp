@@ -10,8 +10,16 @@ class Page2 extends StatefulWidget {
 class _Page2State extends State<Page2> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.deepPurpleAccent,
-    );
+    return const Scaffold(
+        backgroundColor: Colors.deepPurpleAccent,
+        body: Center(
+          child: Text(
+            "Eu Sou Um Imã De Saúde!",
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontFamily: "poppins",
+                fontSize: 20),
+          ),
+        ));
   }
 }

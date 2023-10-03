@@ -10,8 +10,15 @@ class Page3 extends StatefulWidget {
 class _Page3State extends State<Page3> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.greenAccent,
+    return const Scaffold(
+      backgroundColor: Colors.greenAccent,
+      body: Center(
+        child: Text(
+          "Já É Real!!!",
+          style: TextStyle(
+              fontWeight: FontWeight.w600, fontFamily: "poppins", fontSize: 20),
+        ),
+      ),
     );
   }
 }
