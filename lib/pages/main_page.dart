@@ -3,6 +3,7 @@ import 'package:trilhaapp/pages/page_1.dart';
 import 'package:trilhaapp/pages/page_2.dart';
 import 'package:trilhaapp/pages/page_3.dart';
 import 'package:trilhaapp/pages/registration_data.dart';
+import 'package:trilhaapp/pages/task_page.dart';
 import 'package:trilhaapp/shared/widgets/custon_drawer.dart';
 
 class MainPage extends StatefulWidget {
@@ -35,9 +36,11 @@ class _MainPageState extends State<MainPage> {
                     Page1(),
                     Page2(),
                     Page3(),
+                    TaskPage(),
                   ]),
             ),
             BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
                 onTap: (value) {
                   controller.jumpToPage(value);
                 },
@@ -50,6 +53,8 @@ class _MainPageState extends State<MainPage> {
                       label: "Automação"),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.analytics), label: "Nível dos Tanques"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.task), label: "Tarefas"),
                 ])
           ],
         ),
