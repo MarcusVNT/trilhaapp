@@ -76,7 +76,7 @@ class _TaskPageState extends State<TaskPage> {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -94,8 +94,6 @@ class _TaskPageState extends State<TaskPage> {
                         obterTasks();
                         setState(() {});
                       }),
-                  // const Text("Concluídos"),
-                  // Switch(value: false, onChanged: (bool value) {}),
                 ],
               ),
             ),

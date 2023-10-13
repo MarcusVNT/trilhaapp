@@ -20,7 +20,8 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text("Vida me surpreenda!")),
+        appBar:
+            AppBar(title: const Text("Vida me surpreenda!"), centerTitle: true),
         drawer: const CustonDrawer(),
         body: Column(
           children: [

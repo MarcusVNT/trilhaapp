@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:trilhaapp/pages/generate_number.dart';
 import 'package:trilhaapp/pages/login_page.dart';
 import 'package:trilhaapp/pages/registration_data.dart';
+import 'package:trilhaapp/pages/settings.dart';
 
 class CustonDrawer extends StatelessWidget {
   const CustonDrawer({super.key});
@@ -67,6 +69,27 @@ class CustonDrawer extends StatelessWidget {
                     builder: (context) => const RegistrationData()));
           },
         ),
+        const Divider(),
+        const SizedBox(height: 10),
+        InkWell(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              width: double.infinity,
+              child: const Row(
+                children: [
+                  Icon(Icons.confirmation_num_rounded),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text("Gerador de Números da Sorte"),
+                ],
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (bc) => const GenerateNumber()));
+            }),
         const Divider(),
         const SizedBox(height: 10),
         InkWell(
@@ -139,8 +162,9 @@ class CustonDrawer extends StatelessWidget {
                 ],
               )),
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Configurações clicado!")));
+            Navigator.pop(context);
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()));
           },
         ),
         const Divider(),
