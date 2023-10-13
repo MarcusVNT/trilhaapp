@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trilhaapp/repositories/language_repositories.dart';
 import 'package:trilhaapp/repositories/level_repositories.dart';
 import 'package:trilhaapp/shared/widgets/text_label.dart';
@@ -11,6 +12,8 @@ class RegistrationData extends StatefulWidget {
 }
 
 class _RegistrationDataState extends State<RegistrationData> {
+  late SharedPreferences storage;
+
   var nameController = TextEditingController(text: "");
   var birthDateController = TextEditingController(text: "");
   DateTime? birthDate;
@@ -19,10 +22,17 @@ class _RegistrationDataState extends State<RegistrationData> {
   var selectedLevel = "";
   var languagesRepository = LanguagesRepository();
   var languages = [];
-  var selectedLanguages = [];
+  List<String> selectedLanguages = [];
   double chosenSalary = 1320.0;
   int timeExperience = 0;
   bool saving = false;
+
+  final KEY_NAME_DATA = "KEY_NAME_DATA";
+  final KEY_BIRTH_DATE_DATA = "KEY_BIRTH_DATE_DATA";
+  final KEY_LEVEL_DATA = "KEY_LEVEL_DATA";
+  final KEY_LANGUAGES_DATA = "KEY_LANGUAGES_DATA";
+  final KEY_TIME_EXPERIENCE_DATA = "KEY_TIME_EXPERIENCE_DATA";
+  final KEY_CHOSEN_SALARY_DATA = "KEY_CHOSEN_SALARY_DATA";
 
   @override
   void initState() {
@@ -30,6 +40,19 @@ class _RegistrationDataState extends State<RegistrationData> {
     levels = levelRepository.retornaLevel();
     languages = languagesRepository.retornaLanguages();
     super.initState();
+    loadData();
+  }
+
+  void loadData() async {
+    storage = await SharedPreferences.getInstance();
+    setState(() {
+      nameController.text = storage.getString(KEY_NAME_DATA) ?? "";
+      birthDateController.text = storage.getString(KEY_BIRTH_DATE_DATA) ?? "";
+      selectedLevel = storage.getString(KEY_LEVEL_DATA) ?? "";
+      selectedLanguages = storage.getStringList(KEY_LANGUAGES_DATA) ?? [];
+      timeExperience = storage.getInt(KEY_TIME_EXPERIENCE_DATA) ?? 0;
+      chosenSalary = storage.getDouble(KEY_CHOSEN_SALARY_DATA) ?? 1320.0;
+    });
   }
 
   List<DropdownMenuItem<int>> returnsItems(int max) {
@@ -146,11 +169,7 @@ class _RegistrationDataState extends State<RegistrationData> {
                           });
                         }),
                     TextButton(
-                        onPressed: () {
-                          setState(() {
-                            saving = true;
-                          });
-
+                        onPressed: () async {
                           if (nameController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
@@ -194,6 +213,22 @@ class _RegistrationDataState extends State<RegistrationData> {
                             ));
                             return;
                           }
+
+                          await storage.setString(
+                              KEY_NAME_DATA, nameController.text);
+                          await storage.setString(
+                              KEY_BIRTH_DATE_DATA, birthDate.toString());
+                          storage.setString(KEY_LEVEL_DATA, selectedLevel);
+                          await storage.setStringList(
+                              KEY_LANGUAGES_DATA, selectedLanguages);
+                          await storage.setInt(
+                              KEY_TIME_EXPERIENCE_DATA, timeExperience);
+                          await storage.setDouble(
+                              KEY_CHOSEN_SALARY_DATA, chosenSalary);
+
+                          setState(() {
+                            saving = true;
+                          });
 
                           print(nameController.text);
                           print(birthDate.toString());
