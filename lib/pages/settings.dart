@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trilhaapp/service/storage_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -9,7 +9,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  late SharedPreferences storage;
+  StorageService storage = StorageService();
 
   var nicknameController = TextEditingController();
   var emailController = TextEditingController();
@@ -30,14 +30,12 @@ class _SettingsPageState extends State<SettingsPage> {
     loadData();
   }
 
-  void loadData() async {
-    storage = await SharedPreferences.getInstance();
-    setState(() {
-      nicknameController.text = storage.getString(KEY_NICKNAME) ?? "";
-      emailController.text = storage.getString(KEY_EMAIL) ?? "";
-      receiveNotification = storage.getBool(KEY_RECEIVE_NOTIFICATION) ?? false;
-      darkMode = storage.getBool(KEY_DARK_MODE) ?? false;
-    });
+  loadData() async {
+    nicknameController.text = await storage.getNickname();
+    emailController.text = await storage.getEmail();
+    receiveNotification = await storage.getReceiveNotification();
+    darkMode = await storage.getDarkMode();
+    setState(() {});
   }
 
   @override
@@ -86,13 +84,17 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               TextButton(
                   onPressed: () async {
-                    await storage.setString(
-                        KEY_NICKNAME, nicknameController.text);
-                    await storage.setString(KEY_EMAIL, emailController.text);
-                    await storage.setBool(
-                        KEY_RECEIVE_NOTIFICATION, receiveNotification);
-                    await storage.setBool(KEY_DARK_MODE, darkMode);
-                    Navigator.pop(context);
+                    await storage.setNickname(nicknameController.text);
+                    await storage.setEmail(emailController.text);
+                    await storage.setReceiveNotification(receiveNotification);
+                    await storage.setDarkMode(darkMode);
+                    Future.delayed(const Duration(milliseconds: 2), () {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Configurações salvas!"),
+                        backgroundColor: Colors.green,
+                      ));
+                      Navigator.pop(context);
+                    });
                   },
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.pink,

@@ -7,12 +7,16 @@ enum STORAGE_KEYS {
   KEY_LANGUAGES_DATA,
   KEY_TIME_EXPERIENCE_DATA,
   KEY_CHOSEN_SALARY_DATA,
+  KEY_NICKNAME,
+  KEY_EMAIL,
+  KEY_RECEIVE_NOTIFICATION,
+  KEY_DARK_MODE,
 }
 
 class StorageService {
-  _setString(String key, String value) async {
+  Future<void> _setString(String key, String value) async {
     var storage = await SharedPreferences.getInstance();
-    storage.setString(key, value);
+    await storage.setString(key, value);
   }
 
   Future<String> _getString(String key) async {
@@ -20,9 +24,9 @@ class StorageService {
     return storage.getString(key) ?? "";
   }
 
-  _setStringList(String key, List<String> values) async {
+  Future<void> _setStringList(String key, List<String> values) async {
     var storage = await SharedPreferences.getInstance();
-    storage.setStringList(key, values);
+    await storage.setStringList(key, values);
   }
 
   Future<List<String>> _getStringList(String key) async {
@@ -30,9 +34,9 @@ class StorageService {
     return storage.getStringList(key) ?? [];
   }
 
-  _setInt(String key, int value) async {
+  Future<void> _setInt(String key, int value) async {
     var storage = await SharedPreferences.getInstance();
-    storage.setInt(key, value);
+    await storage.setInt(key, value);
   }
 
   Future<int> _getInt(String key) async {
@@ -40,9 +44,9 @@ class StorageService {
     return storage.getInt(key) ?? 0;
   }
 
-  _setDouble(String key, double value) async {
+  Future<void> _setDouble(String key, double value) async {
     var storage = await SharedPreferences.getInstance();
-    storage.setDouble(key, value);
+    await storage.setDouble(key, value);
   }
 
   Future<double> _getDouble(String key) async {
@@ -50,9 +54,9 @@ class StorageService {
     return storage.getDouble(key) ?? 0.0;
   }
 
-  _setBool(String key, bool value) async {
+  Future<void> _setBool(String key, bool value) async {
     var storage = await SharedPreferences.getInstance();
-    storage.setBool(key, value);
+    await storage.setBool(key, value);
   }
 
   Future<bool> _getBool(String key) async {
@@ -60,51 +64,84 @@ class StorageService {
     return storage.getBool(key) ?? false;
   }
 
-  void setRegistrationDataName(String name) async {
-    _setString(STORAGE_KEYS.KEY_NAME_DATA.toString(), name);
+  Future<void> setRegistrationDataName(String value) async {
+    await _setString(STORAGE_KEYS.KEY_NAME_DATA.toString(), value);
   }
 
   Future<String> getRegistrationDataName() async {
     return _getString(STORAGE_KEYS.KEY_NAME_DATA.toString());
   }
 
-  void setRegistrationDataBirthDate(DateTime value) async {
-    _setString(STORAGE_KEYS.KEY_BIRTH_DATE_DATA.toString(), value.toString());
+  Future<void> setRegistrationDataBirthDate(DateTime value) async {
+    await _setString(
+        STORAGE_KEYS.KEY_BIRTH_DATE_DATA.toString(), value.toString());
   }
 
   Future<String> getRegistrationDataBirthDate() async {
     return _getString(STORAGE_KEYS.KEY_BIRTH_DATE_DATA.toString());
   }
 
-  void setRegistrationDataLevel(String value) async {
-    _setString(STORAGE_KEYS.KEY_LEVEL_DATA.toString(), value);
+  Future<void> setRegistrationDataLevel(String value) async {
+    await _setString(STORAGE_KEYS.KEY_LEVEL_DATA.toString(), value);
   }
 
   Future<String> getRegistrationDataLevel() async {
     return _getString(STORAGE_KEYS.KEY_LEVEL_DATA.toString());
   }
 
-  void setRegistrationDataLanguages(List<String> values) async {
-    _setStringList(STORAGE_KEYS.KEY_LANGUAGES_DATA.toString(), values);
+  Future<void> setRegistrationDataLanguages(List<String> values) async {
+    await _setStringList(STORAGE_KEYS.KEY_LANGUAGES_DATA.toString(), values);
   }
 
   Future<List<String>> getRegistrationDataLanguages() async {
     return _getStringList(STORAGE_KEYS.KEY_LANGUAGES_DATA.toString());
   }
 
-  void setRegistrationDataTimeExperience(int value) async {
-    _setInt(STORAGE_KEYS.KEY_TIME_EXPERIENCE_DATA.toString(), value);
+  Future<void> setRegistrationDataTimeExperience(int value) async {
+    await _setInt(STORAGE_KEYS.KEY_TIME_EXPERIENCE_DATA.toString(), value);
   }
 
   Future<int> getRegistrationDataTimeExperience() async {
     return _getInt(STORAGE_KEYS.KEY_TIME_EXPERIENCE_DATA.toString());
   }
 
-  void setRegistrationDataChosenSalary(double value) async {
-    _setDouble(STORAGE_KEYS.KEY_CHOSEN_SALARY_DATA.toString(), value);
+  Future<void> setRegistrationDataChosenSalary(double value) async {
+    await _setDouble(STORAGE_KEYS.KEY_CHOSEN_SALARY_DATA.toString(), value);
   }
 
   Future<double> getRegistrationDataChosenSalary() async {
     return _getDouble(STORAGE_KEYS.KEY_CHOSEN_SALARY_DATA.toString());
+  }
+
+  Future<void> setNickname(String value) async {
+    await _setString(STORAGE_KEYS.KEY_NICKNAME.toString(), value);
+  }
+
+  Future<String> getNickname() async {
+    return _getString(STORAGE_KEYS.KEY_NICKNAME.toString());
+  }
+
+  Future<void> setEmail(String value) async {
+    await _setString(STORAGE_KEYS.KEY_EMAIL.toString(), value);
+  }
+
+  Future<String> getEmail() async {
+    return _getString(STORAGE_KEYS.KEY_EMAIL.toString());
+  }
+
+  Future<void> setReceiveNotification(bool value) async {
+    await _setBool(STORAGE_KEYS.KEY_RECEIVE_NOTIFICATION.toString(), value);
+  }
+
+  Future<bool> getReceiveNotification() async {
+    return _getBool(STORAGE_KEYS.KEY_RECEIVE_NOTIFICATION.toString());
+  }
+
+  Future<void> setDarkMode(bool value) async {
+    await _setBool(STORAGE_KEYS.KEY_DARK_MODE.toString(), value);
+  }
+
+  Future<bool> getDarkMode() async {
+    return _getBool(STORAGE_KEYS.KEY_DARK_MODE.toString());
   }
 }

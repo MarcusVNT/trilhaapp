@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trilhaapp/repositories/language_repositories.dart';
 import 'package:trilhaapp/repositories/level_repositories.dart';
+import 'package:trilhaapp/service/storage_service.dart';
 import 'package:trilhaapp/shared/widgets/text_label.dart';
 
 class RegistrationData extends StatefulWidget {
@@ -12,7 +12,7 @@ class RegistrationData extends StatefulWidget {
 }
 
 class _RegistrationDataState extends State<RegistrationData> {
-  late SharedPreferences storage;
+  StorageService storage = StorageService();
 
   var nameController = TextEditingController(text: "");
   var birthDateController = TextEditingController(text: "");
@@ -44,15 +44,16 @@ class _RegistrationDataState extends State<RegistrationData> {
   }
 
   void loadData() async {
-    storage = await SharedPreferences.getInstance();
-    setState(() {
-      nameController.text = storage.getString(KEY_NAME_DATA) ?? "";
-      birthDateController.text = storage.getString(KEY_BIRTH_DATE_DATA) ?? "";
-      selectedLevel = storage.getString(KEY_LEVEL_DATA) ?? "";
-      selectedLanguages = storage.getStringList(KEY_LANGUAGES_DATA) ?? [];
-      timeExperience = storage.getInt(KEY_TIME_EXPERIENCE_DATA) ?? 0;
-      chosenSalary = storage.getDouble(KEY_CHOSEN_SALARY_DATA) ?? 1320.0;
-    });
+    nameController.text = await storage.getRegistrationDataName();
+    birthDateController.text = await storage.getRegistrationDataBirthDate();
+    if (birthDateController.text.isNotEmpty) {
+      birthDate = DateTime.parse(birthDateController.text);
+    }
+    selectedLevel = await storage.getRegistrationDataLevel();
+    selectedLanguages = await storage.getRegistrationDataLanguages();
+    timeExperience = await storage.getRegistrationDataTimeExperience();
+    chosenSalary = await storage.getRegistrationDataChosenSalary();
+    setState(() {});
   }
 
   List<DropdownMenuItem<int>> returnsItems(int max) {
@@ -160,7 +161,7 @@ class _RegistrationDataState extends State<RegistrationData> {
                         texto:
                             "Pretensão Salarial. R\$ ${chosenSalary.round().toString()}"),
                     Slider(
-                        min: 1320,
+                        min: 0,
                         max: 50000,
                         value: chosenSalary,
                         onChanged: (double value) {
@@ -214,17 +215,17 @@ class _RegistrationDataState extends State<RegistrationData> {
                             return;
                           }
 
-                          await storage.setString(
-                              KEY_NAME_DATA, nameController.text);
-                          await storage.setString(
-                              KEY_BIRTH_DATE_DATA, birthDate.toString());
-                          storage.setString(KEY_LEVEL_DATA, selectedLevel);
-                          await storage.setStringList(
-                              KEY_LANGUAGES_DATA, selectedLanguages);
-                          await storage.setInt(
-                              KEY_TIME_EXPERIENCE_DATA, timeExperience);
-                          await storage.setDouble(
-                              KEY_CHOSEN_SALARY_DATA, chosenSalary);
+                          await storage
+                              .setRegistrationDataName(nameController.text);
+                          await storage
+                              .setRegistrationDataBirthDate(birthDate!);
+                          await storage.setRegistrationDataLevel(selectedLevel);
+                          await storage
+                              .setRegistrationDataLanguages(selectedLanguages);
+                          await storage.setRegistrationDataTimeExperience(
+                              timeExperience);
+                          await storage
+                              .setRegistrationDataChosenSalary(chosenSalary);
 
                           setState(() {
                             saving = true;
@@ -237,12 +238,13 @@ class _RegistrationDataState extends State<RegistrationData> {
                           print(timeExperience);
                           print(chosenSalary);
 
-                          Future.delayed(const Duration(seconds: 3), () {
+                          Future.delayed(const Duration(seconds: 1), () {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text("Dados salvos com sucesso"),
                               backgroundColor: Colors.green,
                             ));
+                            Navigator.pop(context);
                             setState(() {
                               saving = false;
                             });
