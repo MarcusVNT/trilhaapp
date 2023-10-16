@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trilhaapp/pages/generate_number/generate_number_hive.dart';
 import 'package:trilhaapp/pages/login_page.dart';
-import 'package:trilhaapp/pages/registration_data.dart';
+import 'package:trilhaapp/pages/registration%20data/registration_data_hive.dart';
 import 'package:trilhaapp/pages/settings/settings_hive.dart';
 
 class CustonDrawer extends StatelessWidget {
@@ -66,7 +66,7 @@ class CustonDrawer extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const RegistrationData()));
+                    builder: (context) => const RegistrationDataHive()));
           },
         ),
         const Divider(),

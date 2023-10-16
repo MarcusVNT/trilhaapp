@@ -1,38 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:trilhaapp/models/registration_data.dart';
 import 'package:trilhaapp/repositories/language_repositories.dart';
 import 'package:trilhaapp/repositories/level_repositories.dart';
-import 'package:trilhaapp/service/storage_service.dart';
+import 'package:trilhaapp/repositories/registration_data_repository.dart';
 import 'package:trilhaapp/shared/widgets/text_label.dart';
 
-class RegistrationData extends StatefulWidget {
-  const RegistrationData({Key? key}) : super(key: key);
+class RegistrationDataHive extends StatefulWidget {
+  const RegistrationDataHive({Key? key}) : super(key: key);
 
   @override
-  State<RegistrationData> createState() => _RegistrationDataState();
+  State<RegistrationDataHive> createState() => _RegistrationDataHiveState();
 }
 
-class _RegistrationDataState extends State<RegistrationData> {
-  StorageService storage = StorageService();
+class _RegistrationDataHiveState extends State<RegistrationDataHive> {
+  late RegistrationDataRepository registrationDataRepository;
+  var registrationDataModel = RegistrationDataModel.vazio();
 
   var nameController = TextEditingController(text: "");
   var birthDateController = TextEditingController(text: "");
-  DateTime? birthDate;
   var levelRepository = LevelRepository();
   var levels = [];
-  var selectedLevel = "";
   var languagesRepository = LanguagesRepository();
   var languages = [];
-  List<String> selectedLanguages = [];
-  double chosenSalary = 1320.0;
-  int timeExperience = 0;
   bool saving = false;
-
-  final KEY_NAME_DATA = "KEY_NAME_DATA";
-  final KEY_BIRTH_DATE_DATA = "KEY_BIRTH_DATE_DATA";
-  final KEY_LEVEL_DATA = "KEY_LEVEL_DATA";
-  final KEY_LANGUAGES_DATA = "KEY_LANGUAGES_DATA";
-  final KEY_TIME_EXPERIENCE_DATA = "KEY_TIME_EXPERIENCE_DATA";
-  final KEY_CHOSEN_SALARY_DATA = "KEY_CHOSEN_SALARY_DATA";
 
   @override
   void initState() {
@@ -44,15 +34,13 @@ class _RegistrationDataState extends State<RegistrationData> {
   }
 
   void loadData() async {
-    nameController.text = await storage.getRegistrationDataName();
-    birthDateController.text = await storage.getRegistrationDataBirthDate();
-    if (birthDateController.text.isNotEmpty) {
-      birthDate = DateTime.parse(birthDateController.text);
-    }
-    selectedLevel = await storage.getRegistrationDataLevel();
-    selectedLanguages = await storage.getRegistrationDataLanguages();
-    timeExperience = await storage.getRegistrationDataTimeExperience();
-    chosenSalary = await storage.getRegistrationDataChosenSalary();
+    registrationDataRepository = await RegistrationDataRepository.load();
+    registrationDataModel = registrationDataRepository.obterDados();
+    nameController.text = registrationDataModel.name ?? "";
+    birthDateController.text = registrationDataModel.birthDate == null
+        ? ""
+        : registrationDataModel.birthDate.toString();
+
     setState(() {});
   }
 
@@ -101,7 +89,7 @@ class _RegistrationDataState extends State<RegistrationData> {
                         if (data != null) {
                           birthDateController.text =
                               "${data.day}/${data.month}/${data.year}";
-                          birthDate = data;
+                          registrationDataModel.birthDate = data;
                         }
                       },
                     ),
@@ -111,14 +99,14 @@ class _RegistrationDataState extends State<RegistrationData> {
                         children: levels
                             .map((level) => RadioListTile(
                                 title: Text(level.toString()),
-                                selected: selectedLevel == level,
+                                selected: registrationDataModel.level == level,
                                 value: level,
-                                groupValue: selectedLevel,
+                                groupValue: registrationDataModel.level,
                                 onChanged: (value) {
                                   setState(() {
-                                    selectedLevel = value.toString();
+                                    registrationDataModel.level =
+                                        value.toString();
                                   });
-                                  selectedLevel = value.toString();
                                 }))
                             .toList()),
                     const SizedBox(height: 10),
@@ -130,15 +118,18 @@ class _RegistrationDataState extends State<RegistrationData> {
                             .map(
                               (languages) => CheckboxListTile(
                                 title: Text(languages.toString()),
-                                value: selectedLanguages.contains(languages),
+                                value: registrationDataModel.languages
+                                    .contains(languages),
                                 onChanged: (bool? value) {
                                   if (value!) {
                                     setState(() {
-                                      selectedLanguages.add(languages);
+                                      registrationDataModel.languages
+                                          .add(languages);
                                     });
                                   } else {
                                     setState(() {
-                                      selectedLanguages.remove(languages);
+                                      registrationDataModel.languages
+                                          .remove(languages);
                                     });
                                   }
                                 },
@@ -148,25 +139,26 @@ class _RegistrationDataState extends State<RegistrationData> {
                     const SizedBox(height: 10),
                     const TextLabel(texto: "Tempo de Experiência (Anos)"),
                     DropdownButton(
-                        value: timeExperience,
+                        value: registrationDataModel.timeExperience,
                         isExpanded: true,
                         items: returnsItems(40),
                         onChanged: (value) {
                           setState(() {
-                            timeExperience = int.parse(value.toString());
+                            registrationDataModel.timeExperience =
+                                int.parse(value.toString());
                           });
                         }),
                     const SizedBox(height: 10),
                     TextLabel(
                         texto:
-                            "Pretensão Salarial. R\$ ${chosenSalary.round().toString()}"),
+                            "Pretensão Salarial. R\$ ${registrationDataModel.chosenSalary?.round().toString()}"),
                     Slider(
                         min: 0,
                         max: 50000,
-                        value: chosenSalary,
+                        value: registrationDataModel.chosenSalary ?? 0,
                         onChanged: (double value) {
                           setState(() {
-                            chosenSalary = value;
+                            registrationDataModel.chosenSalary = value;
                           });
                         }),
                     TextButton(
@@ -179,7 +171,7 @@ class _RegistrationDataState extends State<RegistrationData> {
                             ));
                             return;
                           }
-                          if (birthDate == null) {
+                          if (registrationDataModel.birthDate == null) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text(
@@ -188,7 +180,7 @@ class _RegistrationDataState extends State<RegistrationData> {
                             ));
                             return;
                           }
-                          if (selectedLevel == "") {
+                          if (registrationDataModel.level == "") {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text("Nível deve ser selecionado"),
@@ -196,7 +188,7 @@ class _RegistrationDataState extends State<RegistrationData> {
                             ));
                             return;
                           }
-                          if (selectedLanguages.isEmpty) {
+                          if (registrationDataModel.languages.isEmpty) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text(
@@ -205,7 +197,8 @@ class _RegistrationDataState extends State<RegistrationData> {
                             ));
                             return;
                           }
-                          if (timeExperience == 0) {
+                          if (registrationDataModel.timeExperience == null ||
+                              registrationDataModel.timeExperience == 0) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text(
@@ -215,28 +208,21 @@ class _RegistrationDataState extends State<RegistrationData> {
                             return;
                           }
 
-                          await storage
-                              .setRegistrationDataName(nameController.text);
-                          await storage
-                              .setRegistrationDataBirthDate(birthDate!);
-                          await storage.setRegistrationDataLevel(selectedLevel);
-                          await storage
-                              .setRegistrationDataLanguages(selectedLanguages);
-                          await storage.setRegistrationDataTimeExperience(
-                              timeExperience);
-                          await storage
-                              .setRegistrationDataChosenSalary(chosenSalary);
+                          registrationDataModel.name = nameController.text;
+
+                          registrationDataRepository
+                              .save(registrationDataModel);
 
                           setState(() {
                             saving = true;
                           });
 
-                          print(nameController.text);
-                          print(birthDate.toString());
-                          print(selectedLevel);
-                          print(selectedLanguages);
-                          print(timeExperience);
-                          print(chosenSalary);
+                          print(registrationDataModel.name);
+                          print(registrationDataModel.birthDate);
+                          print(registrationDataModel.level);
+                          print(registrationDataModel.languages);
+                          print(registrationDataModel.timeExperience);
+                          print(registrationDataModel.chosenSalary);
 
                           Future.delayed(const Duration(seconds: 1), () {
                             ScaffoldMessenger.of(context)
