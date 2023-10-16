@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:trilhaapp/pages/generate_number.dart';
+import 'package:trilhaapp/pages/generate_number/generate_number_hive.dart';
 import 'package:trilhaapp/pages/login_page.dart';
 import 'package:trilhaapp/pages/registration_data.dart';
-import 'package:trilhaapp/pages/settings.dart';
+import 'package:trilhaapp/pages/settings/settings_hive.dart';
 
 class CustonDrawer extends StatelessWidget {
   const CustonDrawer({super.key});
@@ -87,8 +87,10 @@ class CustonDrawer extends StatelessWidget {
             ),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (bc) => const GenerateNumber()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (bc) => const GenerateNumberHive()));
             }),
         const Divider(),
         const SizedBox(height: 10),
@@ -163,8 +165,10 @@ class CustonDrawer extends StatelessWidget {
               )),
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SettingsHivePage()));
           },
         ),
         const Divider(),

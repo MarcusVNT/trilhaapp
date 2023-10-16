@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../service/generate_random_number.dart';
+import '../../service/generate_random_number.dart';
 
-class GenerateNumber extends StatefulWidget {
-  const GenerateNumber({super.key});
+class GenerateNumberSP extends StatefulWidget {
+  const GenerateNumberSP({super.key});
 
   @override
-  State<GenerateNumber> createState() => _GenerateNumberState();
+  State<GenerateNumberSP> createState() => _GenerateNumberSPState();
 }
 
-class _GenerateNumberState extends State<GenerateNumber> {
+class _GenerateNumberSPState extends State<GenerateNumberSP> {
   int? generatedNumber = 0;
   var quantityClicks = 0;
   final CHAVE_NUMERO_SORTE = "numero_sorte";
