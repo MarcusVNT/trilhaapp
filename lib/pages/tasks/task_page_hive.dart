@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:trilhaapp/models/tasks.dart';
-import 'package:trilhaapp/repositories/tasks_repository.dart';
+
+import 'package:trilhaapp/models/tasks_hive_model.dart';
+import 'package:trilhaapp/repositories/tasks_hive_repository.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
@@ -10,9 +11,9 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  var _tasks = const <TasksHiveModel>[];
+  late TasksHiveRepository tasksRepository;
   var descricaoController = TextEditingController();
-  var taskRepository = TasksRepository();
-  var _tasks = const <Tasks>[];
   var tasksNaoConcluidas = false;
 
   @override
@@ -23,11 +24,10 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   void obterTasks() async {
-    if (tasksNaoConcluidas) {
-      _tasks = await taskRepository.listarNaoConcluidas();
-    } else {
-      _tasks = await taskRepository.listarTasks();
-    }
+    tasksRepository = await TasksHiveRepository.load();
+
+    _tasks = tasksRepository.obterDados(tasksNaoConcluidas);
+
     setState(() {});
   }
 
@@ -57,9 +57,11 @@ class _TaskPageState extends State<TaskPage> {
                         child: const Text("Cancelar")),
                     TextButton(
                         onPressed: () async {
-                          await taskRepository.adicionar(
-                              Tasks(descricaoController.text, false));
                           Navigator.pop(context);
+                          await tasksRepository.save(TasksHiveModel.create(
+                              descricaoController.text, false));
+
+                          obterTasks();
                           setState(() {});
                         },
                         child: const Text("Adicionar")),
@@ -107,15 +109,17 @@ class _TaskPageState extends State<TaskPage> {
                   var task = _tasks[index];
                   return Dismissible(
                     onDismissed: (DismissDirection dismissDirection) async {
-                      await taskRepository.remove(task.id);
+                      tasksRepository.excluir(task);
+
                       obterTasks();
                     },
-                    key: Key(task.id),
+                    key: Key(task.descricao),
                     child: ListTile(
                       title: Text(task.descricao),
                       trailing: Switch(
                         onChanged: (bool value) async {
-                          await taskRepository.alterar(task.id, value);
+                          task.concluido = value;
+                          tasksRepository.alterar(task);
                           obterTasks();
                         },
                         value: task.concluido,
